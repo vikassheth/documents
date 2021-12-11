@@ -1,0 +1,32 @@
+#####NFS Server setup
+sudo apt update
+sudo apt upgrade
+sudo apt install nfs-kernel-server
+sudo mkdir -p /mnt/nfs_share
+sudo chown -R nobody:nogroup /mnt/nfs_share/
+sudo chmod 777 /mnt/nfs_share/
+vi /etc/exports
+add below line
+/mnt/nfs_share  192.168.18.0/24(rw,sync,no_subtree_check) ----- use server IP or subnet and save changes
+
+sudo exportfs -a
+sudo systemctl restart nfs-kernel-server
+sudo ufw allow from 192.168.18.0/24 to any port nfs
+sudo ufw enable
+sudo ufw status
+
+
+#####NFS Client setup
+sudo apt update && sudo apt upgrade	
+sudo apt install nfs-common
+sudo mkdir -p /mnt/nfs_clientshare
+sudo mount 192.168.18.124:/mnt/nfs_share  /mnt/nfs_clientshare   --- 192.168.18.124 should be nfs server ip
+
+
+
+######create sample files on server
+cd /mnt/nfs_share/
+touch test1.txt test2.txt
+
+######check files on client
+ls -l /mnt/nfs_clientshare/ 
